@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系统监控面板</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 20px 0 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(90deg, #00d9ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .header p {
+            color: #888;
+            margin-top: 10px;
+        }
+        
+        .refresh-info {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .card-title {
+            font-size: 1.1rem;
+            color: #00d9ff;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: linear-gradient(180deg, #00d9ff, #00ff88);
+            border-radius: 2px;
+        }
+        
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+        
+        .stat-label {
+            color: #888;
+        }
+        
+        .stat-value {
+            font-weight: 600;
+            color: #fff;
+        }
+        
+        .stat-value.highlight {
+            color: #00ff88;
+            font-size: 1.3rem;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 200px;
+            margin-top: 15px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .progress-fill.cpu {
+            background: linear-gradient(90deg, #00d9ff, #0099ff);
+        }
+        
+        .progress-fill.memory {
+            background: linear-gradient(90deg, #00ff88, #00cc66);
+        }
+        
+        .progress-fill.disk {
+            background: linear-gradient(90deg, #ff6b6b, #ee5a5a);
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .info-item {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .info-item label {
+            display: block;
+            color: #666;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+        }
+        
+        .info-item span {
+            color: #fff;
+            font-weight: 500;
+        }
+        
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .disk-item {
+            margin-bottom: 15px;
+        }
+        
+        .disk-item-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .status-ok {
+            color: #00ff88;
+        }
+        
+        .status-warning {
+            color: #ffaa00;
+        }
+        
+        .status-danger {
+            color: #ff6b6b;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .live-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #00ff88;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🖥️ 系统监控面板</h1>
+        <p>Windows Server 2022 Datacenter - <span class="live-indicator"></span>实时监控</p>
+        <p class="refresh-info">每 2 秒自动刷新</p>
+    </div>
+    
+    <div class="grid">
+        <!-- CPU 监控 -->
+        <div class="card">
+            <div class="card-title">CPU 处理器</div>
+            <div class="stat-row">
+                <span class="stat-label">CPU 型号</span>
+                <span class="stat-value" id="cpu-brand">加载中...</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">物理核心</span>
+                <span class="stat-value" id="cpu-cores">-</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">逻辑核心</span>
+                <span class="stat-value" id="cpu-logical">-</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">基础频率</span>
+                <span class="stat-value" id="cpu-speed">-</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="cpuChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- 内存监控 -->
+        <div class="card">
+            <div class="card-title">内存使用</div>
+            <div class="stat-row">
+                <span class="stat-label">使用率</span>
+                <span class="stat-value highlight" id="memory-percent">-%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill memory" id="memory-bar" style="width: 0%"></div>
+            </div>
+            <div class="stat-row" style="margin-top: 15px;">
+                <span class="stat-label">已用内存</span>
+                <span class="stat-value" id="memory-used">-</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">总内存</span>
+                <span class="stat-value" id="memory-total">-</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">可用内存</span>
+                <span class="stat-value" id="memory-free">-</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="memoryChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- 磁盘监控 -->
+        <div class="card">
+            <div class="card-title">磁盘使用</div>
+            <div id="disk-info">加载中...</div>
+        </div>
+        
+        <!-- 系统信息 -->
+        <div class="card">
+            <div class="card-title">系统信息</div>
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>操作系统</label>
+                    <span id="os-distro">-</span>
+                </div>
+                <div class="info-item">
+                    <label>系统版本</label>
+                    <span id="os-release">-</span>
+                </div>
+                <div class="info-item">
+                    <label>系统架构</label>
+                    <span id="os-arch">-</span>
+                </div>
+                <div class="info-item">
+                    <label>主机名</label>
+                    <span id="os-hostname">-</span>
+                </div>
+                <div class="info-item full-width">
+                    <label>运行时间</label>
+                    <span id="uptime">-</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 网络信息 -->
+        <div class="card">
+            <div class="card-title">网络信息</div>
+            <div id="network-info">加载中...</div>
+        </div>
+        
+        <!-- CPU 核心详情 -->
+        <div class="card">
+            <div class="card-title">CPU 各核心负载</div>
+            <div id="cpu-cores-load">加载中...</div>
+        </div>
+    </div>
+
+    <script>
+        // 图表实例
+        let cpuChart, memoryChart;
+        const maxDataPoints = 30;
+        
+        // 初始化图表
+        function initCharts() {
+            const cpuCtx = document.getElementById('cpuChart').getContext('2d');
+            const memCtx = document.getElementById('memoryChart').getContext('2d');
+            
+            cpuChart = new Chart(cpuCtx, {
+                type: 'line',
+                data: {
+                    labels: Array(maxDataPoints).fill(''),
+                    datasets: [{
+                        label: 'CPU 使用率',
+                        data: Array(maxDataPoints).fill(0),
+                        borderColor: '#00d9ff',
+                        backgroundColor: 'rgba(0, 217, 255, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            min: 0,
+                            max: 100,
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            ticks: { color: '#888' }
+                        },
+                        x: { display: false }
+                    }
+                }
+            });
+            
+            memoryChart = new Chart(memCtx, {
+                type: 'line',
+                data: {
+                    labels: Array(maxDataPoints).fill(''),
+                    datasets: [{
+                        label: '内存使用率',
+                        data: Array(maxDataPoints).fill(0),
+                        borderColor: '#00ff88',
+                        backgroundColor: 'rgba(0, 255, 136, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            min: 0,
+                            max: 100,
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            ticks: { color: '#888' }
+                        },
+                        x: { display: false }
+                    }
+                }
+            });
+        }
+        
+        // 格式化字节
+        function formatBytes(bytes) {
+            const gb = bytes / (1024 * 1024 * 1024);
+            if (gb >= 1) return gb.toFixed(2) + ' GB';
+            const mb = bytes / (1024 * 1024);
+            return mb.toFixed(2) + ' MB';
+        }
+        
+        // 格式化运行时间
+        function formatUptime(seconds) {
+            const days = Math.floor(seconds / 86400);
+            const hours = Math.floor((seconds % 86400) / 3600);
+            const mins = Math.floor((seconds % 3600) / 60);
+            if (days > 0) return `${days} 天 ${hours} 小时 ${mins} 分钟`;
+            if (hours > 0) return `${hours} 小时 ${mins} 分钟`;
+            return `${mins} 分钟`;
+        }
+        
+        // 获取状态颜色
+        function getStatusColor(percent) {
+            if (percent < 60) return 'status-ok';
+            if (percent < 85) return 'status-warning';
+            return 'status-danger';
+        }
+        
+        // 更新图表数据
+        function updateChart(chart, value) {
+            chart.data.datasets[0].data.shift();
+            chart.data.datasets[0].data.push(value);
+            chart.update('none');
+        }
+        
+        // 加载完整系统信息
+        async function loadSystemInfo() {
+            try {
+                const res = await fetch('/api/system');
+                const data = await res.json();
+                
+                if (!data.success) return;
+                
+                const d = data.data;
+                
+                // CPU 信息
+                document.getElementById('cpu-brand').textContent = d.cpu.brand;
+                document.getElementById('cpu-cores').textContent = d.cpu.physicalCores;
+                document.getElementById('cpu-logical').textContent = d.cpu.cores;
+                document.getElementById('cpu-speed').textContent = d.cpu.speed + ' GHz';
+                
+                // 系统信息
+                document.getElementById('os-distro').textContent = d.os.distro;
+                document.getElementById('os-release').textContent = d.os.release;
+                document.getElementById('os-arch').textContent = d.os.arch;
+                document.getElementById('os-hostname').textContent = d.os.hostname;
+                document.getElementById('uptime').textContent = formatUptime(d.uptime);
+                
+                // 磁盘信息
+                let diskHtml = '';
+                d.disk.forEach(disk => {
+                    const statusClass = getStatusColor(disk.usePercent);
+                    diskHtml += `
+                        <div class="disk-item">
+                            <div class="disk-item-header">
+                                <span>${disk.fs}</span>
+                                <span class="${statusClass}">${disk.usePercent.toFixed(1)}%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill disk" style="width: ${disk.usePercent}%"></div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-top: 5px; font-size: 0.85rem; color: #888;">
+                                <span>已用: ${formatBytes(disk.used)}</span>
+                                <span>可用: ${formatBytes(disk.available)}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                document.getElementById('disk-info').innerHTML = diskHtml;
+                
+                // 网络信息
+                let netHtml = '';
+                d.network.forEach(net => {
+                    netHtml += `
+                        <div class="stat-row">
+                            <span class="stat-label">${net.iface}</span>
+                            <span class="stat-value">${net.ip4 || 'N/A'}</span>
+                        </div>
+                    `;
+                });
+                document.getElementById('network-info').innerHTML = netHtml;
+                
+                // CPU 各核心负载
+                let coresHtml = '<div style="display: flex; flex-wrap: wrap; gap: 10px;">';
+                d.load.cpus.forEach((load, i) => {
+                    coresHtml += `
+                        <div style="background: rgba(0,0,0,0.2); padding: 10px 15px; border-radius: 8px; text-align: center;">
+                            <div style="color: #666; font-size: 0.8rem;">核心 ${i}</div>
+                            <div style="color: ${getStatusColor(load).replace('status-', '')}; font-weight: bold;">${load}%</div>
+                        </div>
+                    `;
+                });
+                coresHtml += '</div>';
+                document.getElementById('cpu-cores-load').innerHTML = coresHtml;
+                
+            } catch (e) {
+                console.error('Failed to load system info:', e);
+            }
+        }
+        
+        // 加载实时状态
+        async function loadStatus() {
+            try {
+                const res = await fetch('/api/status');
+                const data = await res.json();
+                
+                if (!data.success) return;
+                
+                const d = data.data;
+                
+                // 内存
+                const memPercent = parseFloat(d.memory.percent);
+                document.getElementById('memory-percent').textContent = memPercent + '%';
+                document.getElementById('memory-bar').style.width = memPercent + '%';
+                document.getElementById('memory-used').textContent = formatBytes(d.memory.used);
+                document.getElementById('memory-total').textContent = formatBytes(d.memory.total);
+                document.getElementById('memory-free').textContent = formatBytes(d.memory.free);
+                
+                // 更新图表
+                updateChart(cpuChart, parseFloat(d.cpu.load));
+                updateChart(memoryChart, memPercent);
+                
+            } catch (e) {
+                console.error('Failed to load status:', e);
+            }
+        }
+        
+        // 初始化
+        initCharts();
+        loadSystemInfo();
+        loadStatus();
+        
+        // 每2秒更新一次
+        setInterval(loadStatus, 2000);
+        setInterval(loadSystemInfo, 10000); // 每10秒更新完整信息
+    </script>
+</body>
+</html>

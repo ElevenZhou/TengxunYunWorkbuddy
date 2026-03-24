@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Hub - 智能AI工具导航</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo">
+                <i class="fas fa-robot"></i>
+                <span>AI Hub</span>
+            </div>
+            <nav class="main-nav">
+                <a href="#" class="active">AI工具</a>
+                <a href="#">AI应用</a>
+                <a href="#">每日资讯</a>
+                <a href="#">最新项目</a>
+                <a href="#">教程资源</a>
+            </nav>
+        </div>
+        <div class="header-right">
+            <button class="theme-toggle" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+            <button class="login-btn">登录 / 注册</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- 左侧分类导航 -->
+        <aside class="sidebar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="搜索AI工具..." id="searchInput">
+            </div>
+            
+            <div class="category-nav">
+                <div class="category-item active" data-category="all">
+                    <i class="fas fa-th-large"></i>
+                    <span>全部工具</span>
+                    <span class="count">1000+</span>
+                </div>
+                <div class="category-item" data-category="writing">
+                    <i class="fas fa-pen-fancy"></i>
+                    <span>AI写作</span>
+                    <span class="count">86</span>
+                </div>
+                <div class="category-item" data-category="image">
+                    <i class="fas fa-image"></i>
+                    <span>AI图像</span>
+                    <span class="count">142</span>
+                </div>
+                <div class="category-item" data-category="video">
+                    <i class="fas fa-video"></i>
+                    <span>AI视频</span>
+                    <span class="count">68</span>
+                </div>
+                <div class="category-item" data-category="office">
+                    <i class="fas fa-briefcase"></i>
+                    <span>AI办公</span>
+                    <span class="count">95</span>
+                </div>
+                <div class="category-item" data-category="chat">
+                    <i class="fas fa-comments"></i>
+                    <span>AI聊天</span>
+                    <span class="count">45</span>
+                </div>
+                <div class="category-item" data-category="code">
+                    <i class="fas fa-code"></i>
+                    <span>AI编程</span>
+                    <span class="count">72</span>
+                </div>
+                <div class="category-item" data-category="design">
+                    <i class="fas fa-palette"></i>
+                    <span>AI设计</span>
+                    <span class="count">58</span>
+                </div>
+                <div class="category-item" data-category="audio">
+                    <i class="fas fa-music"></i>
+                    <span>AI音频</span>
+                    <span class="count">36</span>
+                </div>
+                <div class="category-item" data-category="search">
+                    <i class="fas fa-search"></i>
+                    <span>AI搜索</span>
+                    <span class="count">28</span>
+                </div>
+                <div class="category-item" data-category="agent">
+                    <i class="fas fa-user-astronaut"></i>
+                    <span>AI智能体</span>
+                    <span class="count">52</span>
+                </div>
+            </div>
+
+            <div class="trend-chart">
+                <h4><i class="fas fa-chart-line"></i> 热门趋势</h4>
+                <div class="trend-bars">
+                    <div class="trend-item">
+                        <span class="trend-name">AI写作</span>
+                        <div class="trend-bar"><div style="width: 85%"></div></div>
+                        <span class="trend-value">85%</span>
+                    </div>
+                    <div class="trend-item">
+                        <span class="trend-name">AI图像</span>
+                        <div class="trend-bar"><div style="width: 78%"></div></div>
+                        <span class="trend-value">78%</span>
+                    </div>
+                    <div class="trend-item">
+                        <span class="trend-name">AI视频</span>
+                        <div class="trend-bar"><div style="width: 65%"></div></div>
+                        <span class="trend-value">65%</span>
+                    </div>
+                    <div class="trend-item">
+                        <span class="trend-name">AI编程</span>
+                        <div class="trend-bar"><div style="width: 72%"></div></div>
+                        <span class="trend-value">72%</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 中心内容区 -->
+        <main class="main-content">
+            <!-- 筛选栏 -->
+            <div class="filter-bar">
+                <div class="filter-tabs">
+                    <button class="filter-btn active">全部</button>
+                    <button class="filter-btn">热门推荐</button>
+                    <button class="filter-btn">最新收录</button>
+                    <button class="filter-btn">免费工具</button>
+                    <button class="filter-btn">国产精品</button>
+                </div>
+                <div class="view-options">
+                    <button class="view-btn active" data-view="grid"><i class="fas fa-th"></i></button>
+                    <button class="view-btn" data-view="list"><i class="fas fa-list"></i></button>
+                    <select class="sort-select">
+                        <option>综合排序</option>
+                        <option>热度最高</option>
+                        <option>最新发布</option>
+                        <option>评分最高</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- 工具卡片网格 -->
+            <div class="tools-grid" id="toolsGrid">
+                <!-- AI写作工具 -->
+                <div class="tool-card" data-category="writing">
+                    <div class="tool-header">
+                        <img src="https://via.placeholder.com/48x48/4F46E5/FFFFFF?text=ChatGPT" alt="ChatGPT" class="tool-icon">
+                        <div class="tool-actions">
+                            <button class="action-btn compare" title="加入对比"><i class="fas fa-exchange-alt"></i></button>
+                            <button class="action-btn favorite" title="收藏"><i class="far fa-heart"></i></button>
+                        </div>
+                    </div>
+                    <h3 class="tool-name">ChatGPT <span class="badge hot">HOT</span></h3>
+                    <p class="tool-desc">OpenAI开发的对话AI，支持文本生成、代码编写、问答等多种任务</p>
+                    <div class="tool-meta">
+                        <div class="rating">
+                            <i class="fas fa-star"></i>
+                            <span>4.9</span>
+                            <span class="reviews">(12.5k评价)</span>
+                        </div>
+                        <div class="price-tag free">免费</div>
+                    </div>
+                    <div class="tool-tags">
+                        <span class="tag">对话</span>
+                        <span class="tag">写作</span>
+                        <span class="tag">编程</span>
+                    </div>
+                    <div class="tool-footer">
+                        <button class="btn-primary">访问官网</button>
+                        <button class="btn-secondary">查看详情</button>
+                    </div>
+                </div>
+
+                <div class="tool-card" data-category="writing">
+                    <div class="tool-header">
+                        <img src="https://via.placeholder.com/48x48/10A37F/FFFFFF?text=Claude" alt="Claude" class="tool-icon">
+                        <div class="tool-actions">
+                            <button class="action-btn compare" title="加入对比"><i class="fas fa-exchange-alt"></i></button>
+                            <button class="action-btn favorite" title="收藏"><i class="far fa-heart"></i></button>
+                        </div>
+                    </div>
+                    <h3 class="tool-name">Claude <span class="badge new">NEW</span></h3>
+                    <p class="tool-desc">Anthropic推出的AI助手，擅长长文本处理和复杂推理</p>
+                    <div class="tool-meta">
+                        <div class="rating">
+                            <i class="fas fa-star"></i>
+                            <span>4.8</span>
+                            <span class="reviews">(8.2k评价)</span>
+                        </div>
+                        <div class="price-tag free">免费</div>
+                    </div>
+                    <div class="tool-tags">
+                        <span class="tag">长文本</span>
+                        <span class="tag">推理</span>
+                        <span class="tag">分析</span>
+                    </div>
+                    <div class="tool-footer">
+                        <button class="btn-primary">访问官网</button>
+                        <button class="btn-secondary">查看详情</button>
+                    </div>
+                </div>
+
+                <!-- AI图像工具 -->
+                <div class="tool-card" data-category="image">
+                    <div class="tool-header">
+                        <img src="https://via.placeholder.com/48x48/000000/FFFFFF?text=Midjourney" alt="Midjourney" class="tool-icon">
+                        <div class="tool-actions">
+                            <button class="action-btn compare" title="加入对比"><i class="fas fa-exchange-alt"></i></button>
+                            <button class="action-btn favorite" title="收藏"><i class="far fa-heart"></i></button>
+                        </div>
+                    </div>
+                    <h3 class="tool-name">Midjourney <span class="badge hot">HOT</span></h3>
+                    <p class="tool-desc">顶级AI绘画工具，生成高质量艺术图像，支持多种风格</p>
+                    <div class="tool-meta">
+                        <div class="rating">
+                            <i class="fas fa-star"></i>
+                            <span>4.9</span>
+                            <span class="reviews">(15.8k评价)</span>
+                        </div>
+                        <div class="price-tag paid">付费</div>
+                    </div>
+                    <div class="tool-tags">
+                        <span class="tag">绘画</span>
+                        <span class="tag">艺术</span>
+                        <span class="tag">设计</span>
+                    </div>
+                    <div class="tool-footer">
+                        <button class="btn-primary">访问官网</button>
+                        <button class="btn-secondary">查看详情</button>
+                    </div>
+                </div>
+
+                <div class="tool-card" data-category="image">
+                    <div class="tool-header">
+                        <img src="https://via.placeholder.com/48x48/FF6B6B/FFFFFF?text=SD" alt="Stable Diffusion" class="tool-icon">
+                        <div class="tool-actions">
+                            <button class="action-btn compare" title="加入对比"><i class="fas fa-exchange-alt"></i></button>
+                            <button class="action-btn favorite" title="收藏"><i class="far fa-heart"></i></button>
+                        </div>
+                    </div>
+                    <h3 class="tool-name">Stable Diffusion</h3>
+                    <p class="tool-desc">开源AI绘画模型，可本地部署，支持自定义训练</p>
+                    <div class="tool-meta">
+                        <div class="rating">
+                            <i class="fas fa-star"></i>
+                            <span>4.7</span>
+                            <span class="reviews">(22.1k评价)</span>
+                        </div>
+                        <div class="price-tag free">开源</div>
+                    </div>
+                    <div class="tool-tags">
+                        <span class="tag">开源</span>
+                        <span class="tag">绘画</span>
+                        <span class="tag">本地</span>
+                    </div>
+                    <div class="tool-footer">
+                        <button class="btn-primary">访问官网</button>
+                        <button class="btn-secondary">查看详情</button>
+                    </div>
+                </div>
+
+                <!-- AI视频工具 -->
+                <div class="tool-card" data-category="video">
+                    <div class="tool-header">
+                        <img src="https://via.placeholder.com/48x48/FF0050/FFFFFF?text=Sora" alt="Sora" class="tool-icon">
+                        <div class="tool-actions">
+                            <button class="action-btn compare" title="加入对比"><i class="fas fa-exchange-alt"></i></button>
+                            <button class="action-btn favorite" title="收藏"><i class="far fa-heart"></i></button>
+                        </div>
+                    </div>
+                    <h3 class="tool-name">Sora <span class="badge new">NEW</span></h3>
+                    <p class="tool-desc">OpenAI视频生成模型，文本生成高质量视频</p>
+                    <div class="tool-meta">
+                        <div class="rating">
+                            <i class="fas fa-star"></i>
+                            <span>4.9</span>
+                            <span class="reviews">(5.6k评价)</span>
+                        </div>
+                        <div class="price-tag wait">待开放</div>
+                    </div>
+                    <div class="tool-tags">
+                        <span class="tag">视频</span>
+                        <span class="tag">生成</span>
+                        <span class="tag">OpenAI</span>
+                    </div>
+                    <div class="tool-footer">
+                        <button class="btn-primary">访问官网</button>
+                        <button class="btn-secondary">查看详情</button>
+                    </div>
+                </div>
+
+                <div class="tool-card" data-category="video">
+                    <div class="tool-header">
+                        <img src="https://via.placeholder.com/48x48/00D4AA/FFFFFF?text=Runway" alt="Runway" class="tool-icon">
+                        <div class="tool-actions">
+                            <button class="action-btn compare" title="加入对比"><i class="fas fa-exchange-alt"></i></button>
+                            <button class="action-btn favorite" title="收藏"><i class="far fa-heart"></i></button>
+                        </div>
+                    </div>
+                    <h3 class="tool-name">Runway</h3>
+                    <p class="tool-desc">AI视频编辑和生成平台，支持视频合成、抠像等</p>
+                    <div class="tool-meta">
+                        <div class="rating">
+                            <i class="fas fa-star"></i>
+                            <span>4.6</span>
+                            <span class="reviews">(9.3k评价)</span>
+                        </div>
+                        <div class="price-tag paid">付费</div>
+                    </div>
+                    <div class="tool-tags">
+                        <span class="tag">视频</span>
+                        <span class="tag">编辑</span>
+                        <span class="tag">合成</span>
+                    </div>
+                    <div class="tool-footer">
+                        <button class="btn-primary">访问官网</button>
+                        <button class="btn-secondary">查看详情</button>
+                    </div>
+                </div>
+
+                <!-- AI编程工具 -->
+                <div class="tool-card" data-category="code">
+                    <div class="tool-header">
+                        <img src="https://via.placeholder.com/48x48/2D2D2D/FFFFFF?text=GitHub" alt="GitHub Copilot" class="tool-icon">
+                        <div class="tool-actions">
+                            <button class="action-btn compare" title="加入对比"><i class="fas fa-exchange-alt"></i></button>
+                            <button class="action-btn favorite" title="收藏"><i class="far fa-heart"></i></button>
+                        </div>
+                    </div>
+                    <h3 class="tool-name">GitHub Copilot <span class="badge hot">HOT</span></h3>
+                    <p class="tool-desc">GitHub与OpenAI合作的AI编程助手，代码自动补全</p>
+                    <div class="tool-meta">
+                        <div class="rating">
+                            <i class="fas fa-star"></i>
+                            <span>4.8</span>
+                            <span class="reviews">(45.2k评价)</span>
+                        </div>
+                        <div class="price-tag paid">付费</div>
+                    </div>
+                    <div class="tool-tags">
+                        <span class="tag">编程</span>
+                        <span class="tag">代码</span>
+                        <span class="tag">IDE</span>
+                    </div>
+                    <div class="tool-footer">
+                        <button class="btn-primary">访问官网</button>
+                        <button class="btn-secondary">查看详情</button>
+                    </div>
+                </div>
+
+                <div class="tool-card" data-category="code">
+                    <div class="tool-header">
+                        <img src="https://via.placeholder.com/48x48/1E1E1E/FFFFFF?text=Cursor" alt="Cursor" class="tool-icon">
+                        <div class="tool-actions">
+                            <button class="action-btn compare" title="加入对比"><i class="fas fa-exchange-alt"></i></button>
+                            <button class="action-btn favorite" title="收藏"><i class="far fa-heart"></i></button>
+                        </div>
+                    </div>
+                    <h3 class="tool-name">Cursor <span class="badge new">NEW</span></h3>
+                    <p class="tool-desc">AI驱动的代码编辑器，支持自然语言编程</p>
+                    <div class="tool-meta">
+                        <div class="rating">
+                            <i class="fas fa-star"></i>
+                            <span>4.7</span>
+                            <span class="reviews">(6.8k评价)</span>
+                        </div>
+                        <div class="price-tag free">免费</div>
+                    </div>
+                    <div class="tool-tags">
+                        <span class="tag">编辑器</span>
+                        <span class="tag">AI编程</span>
+                        <span class="tag">自然语言</span>
+                    </div>
+                    <div class="tool-footer">
+                        <button class="btn-primary">访问官网</button>
+                        <button class="btn-secondary">查看详情</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 加载更多 -->
+            <div class="load-more">
+                <button class="load-more-btn">加载更多工具 <i class="fas fa-chevron-down"></i></button>
+            </div>
+        </main>
+
+        <!-- 右侧辅助栏 -->
+        <aside class="right-sidebar">
+            <!-- 快捷搜索 -->
+            <div class="widget search-widget">
+                <h4><i class="fas fa-search"></i> 快捷搜索</h4>
+                <div class="search-engines">
+                    <a href="#" class="engine-btn"><i class="fab fa-google"></i> Google</a>
+                    <a href="#" class="engine-btn"><i class="fab fa-bing"></i> Bing</a>
+                    <a href="#" class="engine-btn"><i class="fas fa-paw"></i> 百度</a>
+                </div>
+            </div>
+
+            <!-- 热门工具 -->
+            <div class="widget hot-tools">
+                <h4><i class="fas fa-fire"></i> 本周热门</h4>
+                <div class="hot-list">
+                    <div class="hot-item">
+                        <span class="rank">1</span>
+                        <span class="name">ChatGPT</span>
+                        <span class="heat"><i class="fas fa-fire-alt"></i> 98%</span>
+                    </div>
+                    <div class="hot-item">
+                        <span class="rank">2</span>
+                        <span class="name">Midjourney</span>
+                        <span class="heat"><i class="fas fa-fire-alt"></i> 92%</span>
+                    </div>
+                    <div class="hot-item">
+                        <span class="rank">3</span>
+                        <span class="name">Claude</span>
+                        <span class="heat"><i class="fas fa-fire-alt"></i> 87%</span>
+                    </div>
+                    <div class="hot-item">
+                        <span class="rank">4</span>
+                        <span class="name">Sora</span>
+                        <span class="heat"><i class="fas fa-fire-alt"></i> 85%</span>
+                    </div>
+                    <div class="hot-item">
+                        <span class="rank">5</span>
+                        <span class="name">Cursor</span>
+                        <span class="heat"><i class="fas fa-fire-alt"></i> 78%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI快讯 -->
+            <div class="widget ai-news">
+                <h4><i class="fas fa-newspaper"></i> AI快讯</h4>
+                <div class="news-list">
+                    <div class="news-item">
+                        <span class="time">2小时前</span>
+                        <p>OpenAI发布GPT-5预览版，性能大幅提升</p>
+                    </div>
+                    <div class="news-item">
+                        <span class="time">5小时前</span>
+                        <p>谷歌Gemini 2.0正式上线，支持多模态</p>
+                    </div>
+                    <div class="news-item">
+                        <span class="time">昨天</span>
+                        <p>Midjourney V7发布，图像质量再升级</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 对比栏 -->
+            <div class="widget compare-widget" id="compareWidget">
+                <h4><i class="fas fa-balance-scale"></i> 工具对比 <span class="compare-count">(0/3)</span></h4>
+                <div class="compare-list" id="compareList">
+                    <p class="empty-tip">点击工具卡片上的对比按钮，添加工具进行对比</p>
+                </div>
+                <button class="btn-compare" id="btnCompare" disabled>开始对比</button>
+            </div>
+
+            <!-- 社区入口 -->
+            <div class="widget community">
+                <h4><i class="fas fa-users"></i> 加入社区</h4>
+                <p>与10万+AI爱好者一起交流</p>
+                <button class="btn-community"><i class="fab fa-weixin"></i> 加入微信群</button>
+            </div>
+        </aside>
+    </div>
+
+    <!-- 工具详情弹窗 -->
+    <div class="modal" id="toolModal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <div class="modal-body" id="modalBody">
+                <!-- 动态内容 -->
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
