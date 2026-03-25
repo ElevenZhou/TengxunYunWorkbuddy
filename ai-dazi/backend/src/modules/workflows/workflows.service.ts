@@ -16,7 +16,7 @@ export class WorkflowsService {
   }) {
     const { skip = 0, take = 20, category } = params;
     
-    const where: any = { status: 'published' };
+    const where: any = { status: 'PUBLISHED' };
     if (category) {
       where.category = { slug: category };
     }
@@ -52,11 +52,7 @@ export class WorkflowsService {
         category: true, 
         author: { select: { id: true, name: true, avatar: true } },
         tags: true,
-        steps: {
-          orderBy: { order: 'asc' },
-          include: { tool: true },
-        },
-        _count: { select: { favorites: true } },
+        _count: { select: { Favorite: true } },
       },
     });
   }
@@ -80,7 +76,7 @@ export class WorkflowsService {
         title: `${original.title} (副本)`,
         authorId: userId,
         useCount: 0,
-        status: 'draft',
+        status: 'DRAFT',
       },
     });
   }

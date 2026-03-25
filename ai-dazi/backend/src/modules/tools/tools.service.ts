@@ -76,7 +76,7 @@ export class ToolsService {
 
   async findHot() {
     return this.prisma.tool.findMany({
-      where: { status: 'approved' },
+      where: { status: 'APPROVED' },
       take: 10,
       orderBy: { viewCount: 'desc' },
       include: { category: true },
